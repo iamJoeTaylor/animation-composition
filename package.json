@@ -1,0 +1,32 @@
+{
+  "name": "animiation-composition",
+  "version": "0.1.0",
+  "description": "Compose Sprite Animation Layers",
+  "main": "dist/animation-composition.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/iamJoeTaylor/animiation-composition.git"
+  },
+  "keywords": [
+    "sprite",
+    "animation",
+    "mask",
+    "frames"
+  ],
+  "author": "Joe Taylor <iamjoetaylor@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/iamJoeTaylor/animiation-composition/issues"
+  },
+  "babel": {
+    "plugins": ["transform-es2015-modules-umd"]
+  },
+  "homepage": "https://github.com/iamJoeTaylor/animiation-composition#readme",
+  "devDependencies": {
+    "babel-cli": "^6.24.1",
+    "babel-plugin-transform-es2015-modules-umd": "^6.24.1"
+  }
+}
