@@ -1,6 +1,6 @@
 {
   "name": "animation-composition",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Compose Sprite Animation Layers",
   "main": "dist/animation-composition.js",
   "scripts": {

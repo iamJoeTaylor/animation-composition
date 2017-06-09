@@ -38,7 +38,12 @@
       this._preloadFrame(0).then(this._RAFLoop());
     }
 
+    destroy() {
+      this.isDestroyed = true;
+    }
+
     _update() {
+      if (this.isDestroyed) return;
       this.tickCount += 1;
 
       if (this.tickCount > this.ticksPerFrame) {
@@ -55,11 +60,17 @@
     }
 
     _RAFLoop(frameIndex = 0) {
+      if (this.isDestroyed) return;
+
       const preloadFramePromise = this._preloadFrame(frameIndex + 1);
       this._update();
       return () => {
         preloadFramePromise.then(() => {
-          window.requestAnimationFrame(this._RAFLoop(this.frameIndex));
+          window.requestAnimationFrame(() => {
+            if (this.isDestroyed) return;
+
+            this._RAFLoop(this.frameIndex)();
+          });
 
           if (this.maxNumOfFrames !== 1 && this.frameIndex === frameIndex) return;
           this.render();
@@ -78,7 +89,7 @@
     render() {
       // Render top down
       const ctx = this.canvas.getContext('2d');
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
       [...this.layers].reverse().forEach((layer, i) => {
         ctx.globalCompositeOperation = 'destination-over';
         layer.render(this.canvas, this.frameIndex);
