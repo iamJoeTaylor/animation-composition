@@ -1,6 +1,6 @@
 (function (global, factory) {
   if (typeof define === "function" && define.amd) {
-    define('AnimationComposition', ['exports'], factory);
+    define(['exports'], factory);
   } else if (typeof exports !== "undefined") {
     factory(exports);
   } else {
@@ -8,7 +8,7 @@
       exports: {}
     };
     factory(mod.exports);
-    global.AnimationComposition = mod.exports;
+    global.animationComposition = mod.exports;
   }
 })(this, function (exports) {
   'use strict';
@@ -363,11 +363,25 @@
     return MaskLayer;
   }(BaseLayer);
 
+  var imageStringIterator = function imageStringIterator(stringWithSymbol, start, end) {
+    var padWithZeros = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : true;
+
+    var images = [];
+    for (var i = start; i <= end; i++) {
+      var iAsString = ('' + end).length > ('' + i).length ? '0' + i : '' + i;
+      images.push(stringWithSymbol.replace('XX', iAsString));
+    }
+    return images;
+  };
+
   exports.default = {
     Animation: Animation,
     BaseLayer: BaseLayer,
     Layer: Layer,
     MaskLayer: MaskLayer,
-    ColorLayer: ColorLayer
+    ColorLayer: ColorLayer,
+    Utils: {
+      imageStringIterator: imageStringIterator
+    }
   };
 });

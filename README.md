@@ -115,7 +115,7 @@ const avatarMask = new Layer({ images: imageStringIterator(`${PATH}ripple-web/ma
 const avatarImageLayer = new Layer({ images: [ avatarImage ], sizeRef: avatarMask });
 const avatarLayer = new MaskLayer({ mask: avatarMask, layers: [ avatarImageLayer ]});
 
-return new Animation({
+new Animation({
   ticksPerFrame: 1,
   canvas,
   layers: [ border, participantLayer, avatarLayer ],
