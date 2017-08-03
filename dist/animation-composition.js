@@ -167,8 +167,34 @@
         // Render top down
         var ctx = this.canvas.getContext('2d');
         ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        [].concat(_toConsumableArray(this.layers)).reverse().forEach(function (layer, i) {
+
+        if (!this._layerRendering) {
+          this._layerRendering = [].concat(_toConsumableArray(this.layers)).reduce(function (acc, layer, i) {
+            if (!!layer.mask) {
+              acc.masks.push(layer);
+            } else {
+              if (acc.masks.length) {
+                acc.postmaskLayers.push(layer);
+              } else {
+                acc.premaskLayers.push(layer);
+              }
+            }
+
+            return acc;
+          }, { masks: [], premaskLayers: [], postmaskLayers: [] });
+        }
+
+        [].concat(_toConsumableArray(this._layerRendering.masks)).reverse().forEach(function (layer, i) {
           ctx.globalCompositeOperation = 'destination-over';
+          layer.render(_this2.canvas, _this2.frameIndex);
+        });
+
+        [].concat(_toConsumableArray(this._layerRendering.premaskLayers)).reverse().forEach(function (layer, i) {
+          ctx.globalCompositeOperation = 'destination-over';
+          layer.render(_this2.canvas, _this2.frameIndex);
+        });
+        [].concat(_toConsumableArray(this._layerRendering.postmaskLayers)).forEach(function (layer, i) {
+          ctx.globalCompositeOperation = 'source-over';
           layer.render(_this2.canvas, _this2.frameIndex);
         });
       }

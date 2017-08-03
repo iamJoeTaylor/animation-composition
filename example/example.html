@@ -28,7 +28,7 @@
         const fill = new Layer({
           images: imageStringIterator(`${PATH}ripple-images/fill/ripple_fill_XX_xhdpi.png`, 0, 29)
         });
-        const participantLayer = new MaskLayer({ name: 'participantLayer', mask: fill, layers: [ colorLayer ]});
+        const participantLayer = new MaskLayer({ mask: fill, layers: [ colorLayer ]});
 
         const avatarMask = new Layer({ images: imageStringIterator(`${PATH}ripple-images/mask/ripple_mask_XX_xhdpi.png`, 0, 29) });
         const avatarImageLayer = new Layer({ images: [ avatarImage ], sizeRef: avatarMask });
@@ -61,7 +61,7 @@
             frames: 30,
           },
         });
-        const participantLayer = new MaskLayer({ name: 'participantLayer', mask: fill, layers: [ colorLayer ]});
+        const participantLayer = new MaskLayer({ mask: fill, layers: [ colorLayer ]});
 
         const avatarMask = new Layer({
           sprite: {
@@ -75,7 +75,7 @@
         new Animation({
           ticksPerFrame: 1,
           canvas,
-          layers: [ border, participantLayer, avatarImageLayer ],
+          layers: [ participantLayer, avatarLayer, border ],
         });
       };
       makeAnimationTwo();
