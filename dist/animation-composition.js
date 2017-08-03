@@ -263,6 +263,8 @@
     }, {
       key: 'getSize',
       value: function getSize(index) {
+        if (this._isSprite()) return { width: this._spriteFrame, height: this._spriteFrame };
+
         if (index >= this.images.length) index = this.images.length - 1;
         if (this.imageCache[index]) {
           var _imageCache$index = this.imageCache[index],

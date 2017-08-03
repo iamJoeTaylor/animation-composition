@@ -30,14 +30,14 @@
         });
         const participantLayer = new MaskLayer({ name: 'participantLayer', mask: fill, layers: [ colorLayer ]});
 
-        // const avatarMask = new Layer({ images: imageStringIterator(`${PATH}ripple-images/mask/ripple_mask_XX_xhdpi.png`, 0, 29) });
-        // const avatarImageLayer = new Layer({ images: [ avatarImage ], sizeRef: avatarMask });
-        // const avatarLayer = new MaskLayer({ mask: avatarMask, layers: [ avatarImageLayer ]});
+        const avatarMask = new Layer({ images: imageStringIterator(`${PATH}ripple-images/mask/ripple_mask_XX_xhdpi.png`, 0, 29) });
+        const avatarImageLayer = new Layer({ images: [ avatarImage ], sizeRef: avatarMask });
+        const avatarLayer = new MaskLayer({ mask: avatarMask, layers: [ avatarImageLayer ]});
 
         new Animation({
           ticksPerFrame: 1,
           canvas,
-          layers: [ border, participantLayer ] //, avatarLayer ],
+          layers: [ border, participantLayer, avatarLayer ],
         });
       };
       makeAnimationOne();
@@ -63,16 +63,19 @@
         });
         const participantLayer = new MaskLayer({ name: 'participantLayer', mask: fill, layers: [ colorLayer ]});
 
-        // const avatarMask = new Layer({
-        //   sprite: `${PATH}ripple-sprite/ripple_mask@2x.png`,
-        // });
-        // const avatarImageLayer = new Layer({ images: [ avatarImage ], sizeRef: avatarMask });
-        // const avatarLayer = new MaskLayer({ mask: avatarMask, layers: [ avatarImageLayer ]});
+        const avatarMask = new Layer({
+          sprite: {
+            sheet: `${PATH}ripple-sprite/ripple_mask@2x.png`,
+            frames: 30,
+          },
+        });
+        const avatarImageLayer = new Layer({ images: [ avatarImage ], sizeRef: avatarMask });
+        const avatarLayer = new MaskLayer({ mask: avatarMask, layers: [ avatarImageLayer ]});
 
         new Animation({
           ticksPerFrame: 1,
           canvas,
-          layers: [ border, participantLayer, ] // avatarLayer ],
+          layers: [ border, participantLayer, avatarImageLayer ],
         });
       };
       makeAnimationTwo();
