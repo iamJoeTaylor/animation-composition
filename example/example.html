@@ -5,38 +5,77 @@
     </style>
   </head>
   <body>
-    <canvas />
+    <canvas id="images"></canvas>
+    <canvas id="sprite"></canvas>
 
     <script src="/dist/animation-composition.js"></script>
     <script>
       const { Animation, Layer, MaskLayer, ColorLayer, Utils } = animationComposition.default
       const { imageStringIterator } = Utils;
-
       const PATH = '/example/';
-      const color = 'fuchsia';
       const avatarImage = 'https://s.gravatar.com/avatar/71984c1e86b3a6dce833f047d4d000cc?size=50&amp;default=retro';
 
-      const canvas = document.querySelector('canvas');
+      const makeAnimationOne = () => {
+        const color = 'fuchsia';
 
-      const border = new Layer({
-        images: imageStringIterator(`${PATH}ripple-web/border/ripple_border_XX_xhdpi.png`, 0, 29)
-      });
+        const canvas = document.querySelector('#images');
 
-      const colorLayer = new ColorLayer({ color });
-      const fill = new Layer({
-        images: imageStringIterator(`${PATH}ripple-web/fill/ripple_fill_XX_xhdpi.png`, 0, 29)
-      });
-      const participantLayer = new MaskLayer({ name: 'participantLayer', mask: fill, layers: [ colorLayer ]});
+        const border = new Layer({
+          images: imageStringIterator(`${PATH}ripple-images/border/ripple_border_XX_xhdpi.png`, 0, 29)
+        });
 
-      const avatarMask = new Layer({ images: imageStringIterator(`${PATH}ripple-web/mask/ripple_mask_XX_xhdpi.png`, 0, 29) });
-      const avatarImageLayer = new Layer({ images: [ avatarImage ], sizeRef: avatarMask });
-      const avatarLayer = new MaskLayer({ mask: avatarMask, layers: [ avatarImageLayer ]});
+        const colorLayer = new ColorLayer({ color });
+        const fill = new Layer({
+          images: imageStringIterator(`${PATH}ripple-images/fill/ripple_fill_XX_xhdpi.png`, 0, 29)
+        });
+        const participantLayer = new MaskLayer({ name: 'participantLayer', mask: fill, layers: [ colorLayer ]});
 
-      new Animation({
-        ticksPerFrame: 1,
-        canvas,
-        layers: [ border, participantLayer, avatarLayer ],
-      });
+        // const avatarMask = new Layer({ images: imageStringIterator(`${PATH}ripple-images/mask/ripple_mask_XX_xhdpi.png`, 0, 29) });
+        // const avatarImageLayer = new Layer({ images: [ avatarImage ], sizeRef: avatarMask });
+        // const avatarLayer = new MaskLayer({ mask: avatarMask, layers: [ avatarImageLayer ]});
+
+        new Animation({
+          ticksPerFrame: 1,
+          canvas,
+          layers: [ border, participantLayer ] //, avatarLayer ],
+        });
+      };
+      makeAnimationOne();
+
+      const makeAnimationTwo = () => {
+        const color = 'steelblue';
+
+        const canvas = document.querySelector('#sprite');
+
+        const border = new Layer({
+          sprite: {
+            sheet: `${PATH}ripple-sprite/ripple_border@2x.png`,
+            frames: 30,
+          },
+        });
+
+        const colorLayer = new ColorLayer({ color });
+        const fill = new Layer({
+          sprite: {
+            sheet: `${PATH}ripple-sprite/ripple_fill@2x.png`,
+            frames: 30,
+          },
+        });
+        const participantLayer = new MaskLayer({ name: 'participantLayer', mask: fill, layers: [ colorLayer ]});
+
+        // const avatarMask = new Layer({
+        //   sprite: `${PATH}ripple-sprite/ripple_mask@2x.png`,
+        // });
+        // const avatarImageLayer = new Layer({ images: [ avatarImage ], sizeRef: avatarMask });
+        // const avatarLayer = new MaskLayer({ mask: avatarMask, layers: [ avatarImageLayer ]});
+
+        new Animation({
+          ticksPerFrame: 1,
+          canvas,
+          layers: [ border, participantLayer, ] // avatarLayer ],
+        });
+      };
+      makeAnimationTwo();
     </script>
   </body>
 </html>

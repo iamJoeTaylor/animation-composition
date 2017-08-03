@@ -238,11 +238,18 @@
 
       var _this4 = _possibleConstructorReturn(this, (Layer.__proto__ || Object.getPrototypeOf(Layer)).call(this, opts));
 
-      var images = opts.images,
+      var _opts$images = opts.images,
+          images = _opts$images === undefined ? [] : _opts$images,
+          _opts$sprite = opts.sprite,
+          sprite = _opts$sprite === undefined ? {} : _opts$sprite,
           sizeRef = opts.sizeRef;
 
 
       _this4.images = images;
+      _this4.sprite = sprite;
+      _this4._spriteCol = 5;
+      _this4._spriteFrame = 132;
+
       _this4.sizeRef = sizeRef;
       _this4.imageCache = [];
       return _this4;
@@ -251,7 +258,7 @@
     _createClass(Layer, [{
       key: 'getFrames',
       value: function getFrames() {
-        return this.images.length;
+        return this._isSprite() ? this.sprite.frames : this.images.length;
       }
     }, {
       key: 'getSize',
@@ -270,6 +277,13 @@
       key: 'preload',
       value: function preload(index) {
         var _this5 = this;
+
+        if (this._isSprite()) {
+          if (this.spriteImageCache) return Promise.resolve();
+          return new Promise(function (resolve, reject) {
+            return _this5._getSpriteImg(resolve);
+          });
+        }
 
         if (index >= this.images.length) return Promise.resolve();
         if (this.imageCache[index]) return Promise.resolve();
@@ -292,21 +306,72 @@
         return img;
       }
     }, {
+      key: '_getSpriteImg',
+      value: function _getSpriteImg() {
+        var cb = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : function () {};
+
+        if (!!this.spriteImageCache) return this.spriteImageCache;
+
+        var img = new Image();
+        img.onload = cb;
+        img.src = this.sprite.sheet;
+        this.spriteImageCache = img;
+        return img;
+      }
+    }, {
+      key: '_getSpriteOrigin',
+      value: function _getSpriteOrigin(frameIndex) {
+        var col = frameIndex % this._spriteCol;
+        var row = Math.floor(frameIndex / this._spriteCol);
+        var sx = col * this._spriteFrame;
+        var sy = row * this._spriteFrame;
+
+        return {
+          sx: sx,
+          sy: sy
+        };
+      }
+    }, {
+      key: '_isSprite',
+      value: function _isSprite() {
+        return this.images.length === 0 && !!this.sprite.sheet;
+      }
+    }, {
       key: 'render',
       value: function render(canvas, frameIndex) {
         var ctx = canvas.getContext('2d');
-        if (this.sizeRef) {
-          var width = void 0;
-          var height = void 0;
+        if (!this._isSprite()) {
+          if (this.sizeRef) {
+            // Warning: When trying to abstract width and height out and only having a single call
+            // to drawImage it breaks........WTFBBQ
+            var width = void 0;
+            var height = void 0;
 
-          var size = this.sizeRef.getSize(frameIndex);
-          if (size) {
-            width = size.width;
-            height = size.height;
+            var size = this.sizeRef.getSize(frameIndex);
+            if (size) {
+              width = size.width;
+              height = size.height;
+            }
+            return ctx.drawImage(this._getImg(frameIndex), 0, 0, width, height);
           }
-          return ctx.drawImage(this._getImg(frameIndex), 0, 0, width, height);
+
+          return ctx.drawImage(this._getImg(frameIndex), 0, 0);
         }
-        ctx.drawImage(this._getImg(frameIndex), 0, 0);
+
+        // if _isSprite
+
+        var _getSpriteOrigin2 = this._getSpriteOrigin(frameIndex),
+            sx = _getSpriteOrigin2.sx,
+            sy = _getSpriteOrigin2.sy;
+
+        ctx.drawImage(this._getSpriteImg(), // image,
+        sx, sy, this._spriteFrame, // sWidth,
+        this._spriteFrame, // sHeight,
+        0, // dx,
+        0, // dy,
+        this._spriteFrame, // dWidth,
+        this._spriteFrame // dHeight
+        );
       }
     }]);
 
