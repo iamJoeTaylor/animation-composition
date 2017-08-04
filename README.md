@@ -33,7 +33,12 @@ Layer is an image layer. This is used as an animation layer base for animating a
 images.
 
 #### Opts
-- `images`: An array of one or more images to be used
+One of the following are required:
+  - `images`: An array of one or more image URLs to be used
+  - `sprite`: An object to describe the sprite sheet
+    - `sheet`: The URL to the sprite sheet
+    - `size`: width of a frame (only with is supported right now)
+    - `frames`: Number of frames in the animation (this allows a sheet to have empty frames)
 - `sizeRef` (optional): an optional reference to a Layer type to be used
 
 EXAMPLE:
@@ -45,8 +50,22 @@ const border = new Layer({
 
 ### `MaskLayer` (extends BaseLayer)
 MaskLayer is used to cleverly compose global canvas masking to apply masks to certain layers. This
-does have some hard limitations (to be explained later), though this should handle most simple
-cases.
+does have some hard limitations;
+
+- Mask layers must be grouped together if there is more than one.
+Example:
+```
+OK: [ shapeLayer1, mask1, mask2, shapeLayer2 ]
+
+NOT VALID: [ mask1, shapeLayer1, mask2, shapeLayer2 ]
+```
+
+Technical explanation. Canvas only allows global mask composition, this means that any layer
+data already written to the canvas will affect the mask. To work around that we first find all the
+mask layers in the animation and render those first (top to bottom, writing new data below
+existing data). After masks we write nonmask layers to the canvas being careful to place data
+correctly below or above. If needed we could allow nongrouped mask layers, but it was not
+needed for my usage.
 
 #### Opts
 - `mask`: A Layer that will be used as the mask source. This can be an animation.

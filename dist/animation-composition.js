@@ -273,8 +273,7 @@
 
       _this4.images = images;
       _this4.sprite = sprite;
-      _this4._spriteCol = 5;
-      _this4._spriteFrame = 132;
+      _this4._spriteSize = sprite.size;
 
       _this4.sizeRef = sizeRef;
       _this4.imageCache = [];
@@ -289,7 +288,7 @@
     }, {
       key: 'getSize',
       value: function getSize(index) {
-        if (this._isSprite()) return { width: this._spriteFrame, height: this._spriteFrame };
+        if (this._isSprite()) return { width: this._spriteSize, height: this._spriteSize };
 
         if (index >= this.images.length) index = this.images.length - 1;
         if (this.imageCache[index]) {
@@ -336,12 +335,17 @@
     }, {
       key: '_getSpriteImg',
       value: function _getSpriteImg() {
+        var _this6 = this;
+
         var cb = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : function () {};
 
         if (!!this.spriteImageCache) return this.spriteImageCache;
 
         var img = new Image();
-        img.onload = cb;
+        img.onload = function () {
+          _this6._spriteCol = img.width / _this6._spriteSize;
+          cb.apply(undefined, arguments);
+        };
         img.src = this.sprite.sheet;
         this.spriteImageCache = img;
         return img;
@@ -351,8 +355,8 @@
       value: function _getSpriteOrigin(frameIndex) {
         var col = frameIndex % this._spriteCol;
         var row = Math.floor(frameIndex / this._spriteCol);
-        var sx = col * this._spriteFrame;
-        var sy = row * this._spriteFrame;
+        var sx = col * this._spriteSize;
+        var sy = row * this._spriteSize;
 
         return {
           sx: sx,
@@ -393,12 +397,12 @@
             sy = _getSpriteOrigin2.sy;
 
         ctx.drawImage(this._getSpriteImg(), // image,
-        sx, sy, this._spriteFrame, // sWidth,
-        this._spriteFrame, // sHeight,
+        sx, sy, this._spriteSize, // sWidth,
+        this._spriteSize, // sHeight,
         0, // dx,
         0, // dy,
-        this._spriteFrame, // dWidth,
-        this._spriteFrame // dHeight
+        this._spriteSize, // dWidth,
+        this._spriteSize // dHeight
         );
       }
     }]);
@@ -412,19 +416,19 @@
     function MaskLayer(opts) {
       _classCallCheck(this, MaskLayer);
 
-      var _this6 = _possibleConstructorReturn(this, (MaskLayer.__proto__ || Object.getPrototypeOf(MaskLayer)).call(this, opts));
+      var _this7 = _possibleConstructorReturn(this, (MaskLayer.__proto__ || Object.getPrototypeOf(MaskLayer)).call(this, opts));
 
       var mask = opts.mask,
           layers = opts.layers;
 
 
-      _this6.mask = mask;
-      _this6.layers = layers;
+      _this7.mask = mask;
+      _this7.layers = layers;
 
-      _this6.maxNumOfFrames = [_this6.mask].concat(_toConsumableArray(_this6.layers)).reduce(function (acc, cur, i) {
+      _this7.maxNumOfFrames = [_this7.mask].concat(_toConsumableArray(_this7.layers)).reduce(function (acc, cur, i) {
         return Math.max(acc, cur.getFrames());
       }, 0);
-      return _this6;
+      return _this7;
     }
 
     _createClass(MaskLayer, [{
