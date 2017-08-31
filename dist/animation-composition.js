@@ -103,21 +103,13 @@
       this.debugOffset = debugOffset;
 
       if (this.debug) {
-        var canvasOffset = canvas.getBoundingClientRect();
-        var shift = ['top', 'left'];
-        var keys = ['width', 'height'];
-        var style = function style(i) {
-          return [].concat(keys, shift).reduce(function (acc, key) {
-            return '\n          ' + acc + '\n          ' + key + ':\n            ' + (shift.indexOf(key) >= 0 ? canvasOffset[key] + _this.debugOffset * i : canvasOffset[key]) + 'px;\n        ';
-          }, 'position: absolute;');
-        };
         this.canvases = [].concat(_toConsumableArray(this.layers)).map(function (_l, i) {
           if (i === 0) {
             return canvas;
           }
 
           var _canvas = canvas.cloneNode(true);
-          _canvas.style = style(i);
+          _canvas.style = _this._getCanvasStyle(i);
           canvas.parentNode.appendChild(_canvas);
           return _canvas;
         });
@@ -134,6 +126,24 @@
     }
 
     _createClass(Animation, [{
+      key: '_getCanvasStyle',
+      value: function _getCanvasStyle(i) {
+        var _this2 = this;
+
+        var canvasOffset = this.canvas.getBoundingClientRect();
+        var shift = ['top', 'left'];
+        var keys = ['width', 'height'];
+        var style = [].concat(keys, shift).reduce(function (acc, key) {
+          return '\n        ' + acc + '\n        ' + key + ':\n          ' + (shift.indexOf(key) >= 0 ? canvasOffset[key] + _this2.debugOffset * i : canvasOffset[key]) + 'px;\n      ';
+        }, 'position: absolute;');
+        return style;
+      }
+    }, {
+      key: 'updateDebugOffset',
+      value: function updateDebugOffset(debugOffset) {
+        this.debugOffset = debugOffset;
+      }
+    }, {
       key: 'destroy',
       value: function destroy() {
         this._clearCtx();
@@ -165,7 +175,7 @@
     }, {
       key: '_RAFLoop',
       value: function _RAFLoop() {
-        var _this2 = this;
+        var _this3 = this;
 
         var frameIndex = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
 
@@ -176,13 +186,13 @@
         return function () {
           preloadFramePromise.then(function () {
             window.requestAnimationFrame(function () {
-              if (_this2.isDestroyed) return;
+              if (_this3.isDestroyed) return;
 
-              _this2._RAFLoop(_this2.frameIndex)();
+              _this3._RAFLoop(_this3.frameIndex)();
             });
 
-            if (_this2.maxNumOfFrames !== 1 && _this2.frameIndex === frameIndex) return;
-            _this2.render();
+            if (_this3.maxNumOfFrames !== 1 && _this3.frameIndex === frameIndex) return;
+            _this3.render();
           });
         };
       }
@@ -198,12 +208,12 @@
     }, {
       key: '_clearCtx',
       value: function _clearCtx() {
-        var _this3 = this;
+        var _this4 = this;
 
         if (this.debug) {
           this.canvases.forEach(function (canvas) {
             var ctx = canvas.getContext('2d');
-            ctx.clearRect(0, 0, _this3.canvas.width, _this3.canvas.height);
+            ctx.clearRect(0, 0, _this4.canvas.width, _this4.canvas.height);
           });
           return;
         }
@@ -220,9 +230,17 @@
     }, {
       key: 'render',
       value: function render() {
-        var _this4 = this;
+        var _this5 = this;
 
         this._clearCtx();
+
+        if (this.debug) {
+          [].concat(_toConsumableArray(this.layers)).forEach(function (_l, i) {
+            if (i === 0) return;
+
+            _this5.canvases[i].style = _this5._getCanvasStyle(i);
+          });
+        }
 
         if (!this._layerRendering) {
           this._layerRendering = [].concat(_toConsumableArray(this.layers)).reduce(function (acc, layer, i) {
@@ -242,21 +260,21 @@
         }
 
         [].concat(_toConsumableArray(this._layerRendering.masks)).reverse().forEach(function (layer, i) {
-          var canvas = _this4.debug ? _this4.canvases[layer._originalIndex] : _this4.canvas;
-          _this4._setCtxComposite('destination-over', canvas);
-          layer.render(canvas, _this4.frameIndex);
+          var canvas = _this5.debug ? _this5.canvases[layer._originalIndex] : _this5.canvas;
+          _this5._setCtxComposite('destination-over', canvas);
+          layer.render(canvas, _this5.frameIndex);
         });
 
         [].concat(_toConsumableArray(this._layerRendering.premaskLayers)).reverse().forEach(function (layer, i) {
-          var canvas = _this4.debug ? _this4.canvases[layer._originalIndex] : _this4.canvas;
-          _this4._setCtxComposite('destination-over', canvas);
-          layer.render(canvas, _this4.frameIndex);
+          var canvas = _this5.debug ? _this5.canvases[layer._originalIndex] : _this5.canvas;
+          _this5._setCtxComposite('destination-over', canvas);
+          layer.render(canvas, _this5.frameIndex);
         });
 
         [].concat(_toConsumableArray(this._layerRendering.postmaskLayers)).forEach(function (layer, i) {
-          var canvas = _this4.debug ? _this4.canvases[layer._originalIndex] : _this4.canvas;
-          _this4._setCtxComposite('source-over', canvas);
-          layer.render(canvas, _this4.frameIndex);
+          var canvas = _this5.debug ? _this5.canvases[layer._originalIndex] : _this5.canvas;
+          _this5._setCtxComposite('source-over', canvas);
+          layer.render(canvas, _this5.frameIndex);
         });
       }
     }]);
@@ -296,13 +314,13 @@
     function ColorLayer(opts) {
       _classCallCheck(this, ColorLayer);
 
-      var _this5 = _possibleConstructorReturn(this, (ColorLayer.__proto__ || Object.getPrototypeOf(ColorLayer)).call(this, opts));
+      var _this6 = _possibleConstructorReturn(this, (ColorLayer.__proto__ || Object.getPrototypeOf(ColorLayer)).call(this, opts));
 
       var color = opts.color;
 
 
-      _this5.color = color;
-      return _this5;
+      _this6.color = color;
+      return _this6;
     }
 
     _createClass(ColorLayer, [{
@@ -323,22 +341,24 @@
     function Layer(opts) {
       _classCallCheck(this, Layer);
 
-      var _this6 = _possibleConstructorReturn(this, (Layer.__proto__ || Object.getPrototypeOf(Layer)).call(this, opts));
+      var _this7 = _possibleConstructorReturn(this, (Layer.__proto__ || Object.getPrototypeOf(Layer)).call(this, opts));
 
       var _opts$images = opts.images,
           images = _opts$images === undefined ? [] : _opts$images,
           _opts$sprite = opts.sprite,
           sprite = _opts$sprite === undefined ? {} : _opts$sprite,
-          sizeRef = opts.sizeRef;
+          sizeRef = opts.sizeRef,
+          size = opts.size;
 
 
-      _this6.images = images;
-      _this6.sprite = sprite;
-      _this6._spriteSize = sprite.size;
+      _this7.images = images;
+      _this7.sprite = sprite;
+      _this7._spriteSize = sprite.size;
 
-      _this6.sizeRef = sizeRef;
-      _this6.imageCache = [];
-      return _this6;
+      _this7.sizeRef = sizeRef;
+      _this7.size = size;
+      _this7.imageCache = [];
+      return _this7;
     }
 
     _createClass(Layer, [{
@@ -364,19 +384,19 @@
     }, {
       key: 'preload',
       value: function preload(index) {
-        var _this7 = this;
+        var _this8 = this;
 
         if (this._isSprite()) {
           if (this.spriteImageCache) return Promise.resolve();
           return new Promise(function (resolve, reject) {
-            return _this7._getSpriteImg(resolve);
+            return _this8._getSpriteImg(resolve);
           });
         }
 
         if (index >= this.images.length) return Promise.resolve();
         if (this.imageCache[index]) return Promise.resolve();
         return new Promise(function (resolve, reject) {
-          return _this7._getImg(index, resolve);
+          return _this8._getImg(index, resolve);
         });
       }
     }, {
@@ -396,7 +416,7 @@
     }, {
       key: '_getSpriteImg',
       value: function _getSpriteImg() {
-        var _this8 = this;
+        var _this9 = this;
 
         var cb = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : function () {};
 
@@ -404,7 +424,7 @@
 
         var img = new Image();
         img.onload = function () {
-          _this8._spriteCol = img.width / _this8._spriteSize;
+          _this9._spriteCol = img.width / _this9._spriteSize;
           cb.apply(undefined, arguments);
         };
         img.src = this.sprite.sheet;
@@ -434,18 +454,27 @@
       value: function render(canvas, frameIndex) {
         var ctx = canvas.getContext('2d');
         if (!this._isSprite()) {
-          if (this.sizeRef) {
-            // Warning: When trying to abstract width and height out and only having a single call
-            // to drawImage it breaks........WTFBBQ
-            var width = void 0;
-            var height = void 0;
+          if (this.sizeRef || this.size) {
+            var _getImg2 = this._getImg(0),
+                width = _getImg2.width,
+                height = _getImg2.height;
 
-            var size = this.sizeRef.getSize(frameIndex);
-            if (size) {
-              width = size.width;
-              height = size.height;
+            var x = 0;
+            var y = 0;
+
+            if (this.size) {
+              width = this.size.width || width;
+              height = this.size.height || height;
+              x = this.size.x || x;
+              y = this.size.y || y;
+            } else {
+              var size = this.sizeRef.getSize(frameIndex);
+              if (size) {
+                width = size.width;
+                height = size.height;
+              }
             }
-            return ctx.drawImage(this._getImg(frameIndex), 0, 0, width, height);
+            return ctx.drawImage(this._getImg(frameIndex), x, y, width, height);
           }
 
           return ctx.drawImage(this._getImg(frameIndex), 0, 0);
@@ -477,19 +506,19 @@
     function MaskLayer(opts) {
       _classCallCheck(this, MaskLayer);
 
-      var _this9 = _possibleConstructorReturn(this, (MaskLayer.__proto__ || Object.getPrototypeOf(MaskLayer)).call(this, opts));
+      var _this10 = _possibleConstructorReturn(this, (MaskLayer.__proto__ || Object.getPrototypeOf(MaskLayer)).call(this, opts));
 
       var mask = opts.mask,
           layers = opts.layers;
 
 
-      _this9.mask = mask;
-      _this9.layers = layers;
+      _this10.mask = mask;
+      _this10.layers = layers;
 
-      _this9.maxNumOfFrames = [_this9.mask].concat(_toConsumableArray(_this9.layers)).reduce(function (acc, cur, i) {
+      _this10.maxNumOfFrames = [_this10.mask].concat(_toConsumableArray(_this10.layers)).reduce(function (acc, cur, i) {
         return Math.max(acc, cur.getFrames());
       }, 0);
-      return _this9;
+      return _this10;
     }
 
     _createClass(MaskLayer, [{

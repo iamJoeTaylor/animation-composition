@@ -33,7 +33,8 @@
       handleRange = (el) => {
         if (!options.isDebug) return;
         options.debugOffset = parseInt(el.value) * 2;
-        renderAnimationsWithOptions(options);
+        animationOne.updateDebugOffset(options.debugOffset);
+        animationTwo.updateDebugOffset(options.debugOffset);
       };
 
       const renderAnimationsWithOptions = opts => {
@@ -102,7 +103,15 @@
               frames: 30,
             },
           });
-          const avatarImageLayer = new Layer({ images: [ avatarImage ], sizeRef: avatarMask });
+          const avatarImageLayer = new Layer({
+            images: [ avatarImage ],
+            size: {
+              width: 80,
+              height: 80,
+              x: 26,
+              y: 26,
+            },
+          });
           const avatarLayer = new MaskLayer({ mask: avatarMask, layers: [ avatarImageLayer ]});
 
           return new Animation({
