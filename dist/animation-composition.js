@@ -425,6 +425,8 @@
         var img = new Image();
         img.onload = function () {
           _this9._spriteCol = img.width / _this9._spriteSize;
+          _this9._spriteRow = img.height / _this9._spriteSize;
+
           cb.apply(undefined, arguments);
         };
         img.src = this.sprite.sheet;
@@ -436,6 +438,15 @@
       value: function _getSpriteOrigin(frameIndex) {
         var col = frameIndex % this._spriteCol;
         var row = Math.floor(frameIndex / this._spriteCol);
+
+        // Trying to get origin outside of image
+        if (row >= this._spriteRow) {
+          // Get last frame
+          // TODO: add a framecount option for uneven spritesheets
+          col = this._spriteCol - 1;
+          row = this._spriteRow - 1;
+        }
+
         var sx = col * this._spriteSize;
         var sy = row * this._spriteSize;
 
