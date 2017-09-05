@@ -1,3 +1,13 @@
+## Animation
+#### Opts
+- `canvas`: The canvas element for the animation to use
+- `layers`: An Array of Layers composed however you'd like
+- `loop` (optional default: true)
+- `ticksPerFrame` (optional default: 0): How many frame delay you would like in each 60 frame/sec call. e.g. 1 ticksPerFrame is ~30fps
+- `debug` (optional default: false): If you'd like to offset Layers or receive console logs
+- `debugOffset` (optional default: 0): This only takes effect if `debug` is true. This is the amount of pixels to offset the layers for debugging.
+- `onerror` (optional): If there is an error this function will be called
+
 ## Layers
 
 ### `BaseLayer`
