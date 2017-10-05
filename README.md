@@ -1,3 +1,8 @@
+## Installation
+```bash
+npm install animation-composition
+```
+
 [Demo](https://iamjoetaylor.github.io/animation-composition/example/example.html)
 
 ## Animation
