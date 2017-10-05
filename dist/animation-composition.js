@@ -92,7 +92,9 @@
           _ref$debugOffset = _ref.debugOffset,
           debugOffset = _ref$debugOffset === undefined ? 0 : _ref$debugOffset,
           _ref$onerror = _ref.onerror,
-          onerror = _ref$onerror === undefined ? function () {} : _ref$onerror;
+          onerror = _ref$onerror === undefined ? function () {} : _ref$onerror,
+          _ref$paused = _ref.paused,
+          paused = _ref$paused === undefined ? false : _ref$paused;
 
       _classCallCheck(this, Animation);
 
@@ -122,7 +124,9 @@
         return Math.max(acc, cur.getFrames());
       }, 0);
 
-      this.frameIndex = 0, this.tickCount = 0, this.ticksPerFrame = ticksPerFrame;
+      this.isPaused = paused;
+
+      this.frameIndex = 0, this.tickCount = 0, this.ticksPerFrame = this.isPaused ? 0 : ticksPerFrame;
 
       // Start Animation
       this._preloadFrame(0).then(this._RAFLoop());
@@ -158,6 +162,14 @@
         this.isDestroyed = true;
       }
     }, {
+      key: 'next',
+      value: function next() {
+        if (this.isDestroyed || !this.isPaused) return;
+
+        this.render();
+        this._RAFLoop(this.frameIndex)();
+      }
+    }, {
       key: '_update',
       value: function _update() {
         if (this.isDestroyed) return;
@@ -188,14 +200,17 @@
         this._update();
         return function () {
           preloadFramePromise.then(function () {
-            window.requestAnimationFrame(function () {
-              if (_this3.isDestroyed) return;
+            if (!_this3.isPaused) {
+              window.requestAnimationFrame(function () {
+                if (_this3.isDestroyed) return;
 
-              _this3._RAFLoop(_this3.frameIndex)();
-            });
+                _this3._RAFLoop(_this3.frameIndex)();
+              });
+            }
 
             if (_this3.maxNumOfFrames !== 1 && _this3.frameIndex === frameIndex) return;
-            _this3.render();
+
+            if (!_this3.isPaused) _this3.render();
           });
         };
       }
@@ -425,6 +440,7 @@
         if (!!this.imageCache[index]) return this.imageCache[index];
 
         var img = new Image();
+        img.crossOrigin = "Anonymous";
         img.onload = cb;
         img.onerror = function (err) {
           _this10.imagesError[index] = true;
@@ -446,6 +462,7 @@
         if (!!this.spriteImageCache) return this.spriteImageCache;
 
         var img = new Image();
+        img.crossOrigin = "Anonymous";
         img.onload = function () {
           _this11._spriteCol = img.width / _this11._spriteSize;
           _this11._spriteRow = img.height / _this11._spriteSize;

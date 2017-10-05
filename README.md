@@ -6,7 +6,12 @@
 - `ticksPerFrame` (optional default: 0): How many frame delay you would like in each 60 frame/sec call. e.g. 1 ticksPerFrame is ~30fps
 - `debug` (optional default: false): If you'd like to offset Layers or receive console logs
 - `debugOffset` (optional default: 0): This only takes effect if `debug` is true. This is the amount of pixels to offset the layers for debugging.
+- `paused` (optional default: false): Do not play animation. Allows manual step through using `animation.next()`. If true `ticksPerFrame` is always set to `0`
 - `onerror` (optional): If there is an error this function will be called
+
+#### Methods
+- `instance.destroy`: Destroy instance and stop RAF timer
+- `instance.next`: If paused, render next frame
 
 ## Layers
 
