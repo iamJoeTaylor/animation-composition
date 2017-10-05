@@ -1,3 +1,5 @@
+[Demo](https://iamjoetaylor.github.io/animation-composition/example/example.html)
+
 ## Animation
 #### Opts
 - `canvas`: The canvas element for the animation to use

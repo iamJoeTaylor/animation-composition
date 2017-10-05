@@ -17,7 +17,7 @@
       <input type="range" oninput="handleRange(this);" />
     </div>
 
-    <script src="/dist/animation-composition.js"></script>
+    <script src="../dist/animation-composition.js"></script>
     <script>
       const options = {
         isDebug: false,
@@ -41,7 +41,7 @@
       const renderAnimationsWithOptions = opts => {
         const { Animation, Layer, MaskLayer, ColorLayer, Utils } = animationComposition.default
         const { imageStringIterator } = Utils;
-        const PATH = '/example/';
+        const PATH = './';
         const avatarImage = 'https://s.gravatar.com/avatar/71984c1e86b3a6dce833f047d4d000cc?size=50&amp;default=retro';
 
         const makeAnimationOne = () => {
